@@ -1,0 +1,133 @@
+---
+title: "PSTAT 131 Homework 1"
+author: "Evan Hu"
+date: "2022-09-29"
+output: html_document
+---
+
+## Machine Learning Main Ideas
+Please answer the following questions. Be sure that your solutions are clearly marked and that your document is neatly formatted.
+
+You don’t have to rephrase everything in your own words, but if you quote directly, you should cite whatever materials you use (this can be as simple as “from the lecture/page # of book”).
+
+### Question 1:
+Define supervised and unsupervised learning. What are the difference(s) between them?
+
+* Supervised learning is defined by its use of labeled datasets that train or "supervise" algorithms into classifying data and predicting outcomes accurately. Unsupervised learning is, put simply, machine learning without the "supervision". The algorithms of unsupervised learning analyze and cluster unlabeled datasets. 
+
+### Question 2:
+Explain the difference between a regression model and a classification model, specifically in the context of machine learning.
+
+* A regression model is used to predict quantitative/numerical values. A classification model is used to predict qualitative/categorical values. 
+
+### Question 3:
+Name two commonly used metrics for regression ML problems. Name two commonly used metrics for classification ML problems.
+
+* Mean squared error (MSE) and mean absolute error (MAE) are two commonly used metrics for regression ML problems. Accuracy, precision, and recall are some of the commonly used metrics for classification ML problems.
+
+### Question 4:
+As discussed, statistical models can be used for different purposes. These purposes can generally be classified into the following three categories. Provide a brief description of each.
+
+Descriptive models: From the lecture, "choose model to best visually emphasize a trend in data". 
+
+Inferential models: From the lecture, "aim is to test theories and to state the relationship between outcome and predictor(s)".
+
+Predictive models: From the lecture, "aim is to predict response variable (outcome) with minimum reducible error". 
+
+### Question 5:
+Predictive models are frequently used in machine learning, and they can usually be described as either mechanistic or empirically-driven. Answer the following questions.
+
+Define mechanistic. Define empirically-driven. How do these model types differ? How are they similar?
+
+* Mechanistic relates to explanation of outcomes through purely mathematical or deterministic terms, like using theories to predict the events of the real world. Empirically-driven is the reliance on observation rather than theory, like studying real world events to develop a theory. A mechanistic model would assume a parametric form for the response variable. An empirically-driven model does not have any assumptions about the response variable. Mechanistic models are parametric while empirically-driven models are non-parametric. Both methods are used to predict outcomes, and the two methods can be combined to approach a study. 
+
+In general, is a mechanistic or empirically-driven model easier to understand? Explain your choice.
+
+* A mechanistic model is easier to understand because empirically-driven models are much more flexible than mechanistic models by default. As the flexibility of a model increases, its interpretability decreases, making the models harder to understand. 
+
+Describe how the bias-variance tradeoff is related to the use of mechanistic or empirically-driven models.
+
+* Mechanistic models can vary in their flexibility. By adding more parameters, we can increase the flexibility of mechanistic models. Empirically-driven models are much more flexible than mechanistic models by default. Furthermore, simple models often have high bias and low variance, and flexible models often have low bias and high variance. 
+
+### Question 6:
+A political candidate’s campaign has collected some detailed voter history data from their constituents. The campaign is interested in two questions:
+
+Given a voter’s profile/data, how likely is it that they will vote in favor of the candidate?
+
+How would a voter’s likelihood of support for the candidate change if they had personal contact with the candidate?
+
+Classify each question as either predictive or inferential. Explain your reasoning for each.
+
+* The first question is predictive because the campaign is trying to predict the outcome of a vote based on the voter's profile/data (which are considered the predictor(s)). The second question is inferential because the campaign is trying to determine the significance of the feature of personal contact with the candidate on the outcome (voter's likelihood of support for candidate). The second question is trying to determine the relationship between the outcome and one of the predictors. 
+
+## Exploratory Data Analysis
+This section will ask you to complete several exercises. For this homework assignment, we’ll be working with the mpg data set that is loaded when you load the tidyverse. Make sure you load the tidyverse and any other packages you need.
+
+Exploratory data analysis (or EDA) is not based on a specific set of rules or formulas. It is more of a state of curiosity about data. It’s an iterative process of:
+
+generating questions about data
+visualize and transform your data as necessary to get answers
+use what you learned to generate more questions
+A couple questions are always useful when you start out. These are “what variation occurs within the variables,” and “what covariation occurs between the variables.”
+
+You should use the tidyverse and ggplot2 for these exercises.
+
+### Exercise 1:
+We are interested in highway miles per gallon, or the hwy variable. Create a histogram of this variable. Describe what you see/learn.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+# View(mpg)
+
+ggplot(mpg, aes(x=hwy)) + geom_histogram()
+
+```
+
+The mode of highway miles per gallon is between 26 and 28. The highest highway miles per gallon is 44. The histogram is somewhat right skewed.
+
+### Exercise 2:
+Create a scatterplot. Put hwy on the x-axis and cty on the y-axis. Describe what you notice. Is there a relationship between hwy and cty? What does this mean?
+
+```{r}
+ggplot(mpg, aes(x=hwy, y=cty))+geom_point()
+
+```
+
+Yes, there is a linear relationship between hwy and cty. There is a positive correlation between hwy and cty. This means that as one of the variable increases, the other variable also increases. If one of the variables decreases, the other decreases as well. 
+
+### Exercise 3:
+Make a bar plot of manufacturer. Flip it so that the manufacturers are on the y-axis. Order the bars by height. Which manufacturer produced the most cars? Which produced the least?
+
+```{r}
+ggplot(mpg, aes(y=reorder(manufacturer, manufacturer, function(x)-length(x))))+geom_bar()
+
+```
+
+Dodge produced the most amount of cars. Lincoln produced the least amount of cars. 
+
+### Exercise 4:
+Make a box plot of hwy, grouped by cyl. Do you see a pattern? If so, what?
+
+```{r}
+mpg_copy <- mpg
+mpg_copy$cyl <- as.factor(mpg_copy$cyl)
+ggplot(mpg_copy, aes(x=cyl, y=hwy)) + geom_boxplot()
+```
+
+It seems that on average, vehicles with a higher number of cylinders (higher cyl) have a lower highway miles per gallon (hwy). 
+
+### Exercise 5:
+Use the corrplot package to make a lower triangle correlation matrix of the mpg dataset. (Hint: You can find information on the package here.)
+
+Which variables are positively or negatively correlated with which others? Do these relationships make sense to you? Are there any that surprise you?
+
+``` {r}
+library(corrplot)
+mpg_numeric_variables_only <- select_if(mpg, is.numeric)
+cor_coeff_mpg <- cor(mpg_numeric_variables_only)
+corrplot(cor_coeff_mpg, type = 'lower')
+```
+
+cyl is positively correlated with displ and is slightly positively correlated with year. cyl is negatively correlated with cty and hwy. displ is slightly positively correlated with year. displ is negatively correlated with cty and hwy. cty is positively correlated with hwy, which makes sense as we plotted these two variables in a scatterplot and saw a positive linear relationship between the two. The correlations between the variables make sense to me, especially how year has either a loose correlation with or no correlation with the other 4 variables. 
